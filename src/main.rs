@@ -1,3 +1,4 @@
+mod allow_state;
 mod commands;
 mod daemon;
 mod mux;

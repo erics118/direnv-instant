@@ -1,3 +1,4 @@
+use crate::allow_state::allow_state;
 use crate::daemon::{
     DaemonContext, detach_daemon, direnv_export_command, get_socket_path, notify_daemon,
     start_daemon,
@@ -30,6 +31,7 @@ pub fn run() {
         Some(dir) => dir,
         None => {
             shell.unset_var("__DIRENV_INSTANT_CURRENT_DIR");
+            shell.unset_var("__DIRENV_INSTANT_ALLOWED");
             run_direnv_sync(direnv, shell, false);
             return;
         }
@@ -47,6 +49,10 @@ pub fn run() {
     shell.export_var(
         "__DIRENV_INSTANT_CURRENT_DIR",
         &envrc_dir.display().to_string(),
+    );
+    shell.export_var(
+        "__DIRENV_INSTANT_ALLOWED",
+        &allow_state(&envrc_dir).to_string(),
     );
 
     // If not in a multiplexer, just run direnv synchronously
